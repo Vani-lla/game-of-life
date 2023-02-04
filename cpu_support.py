@@ -58,40 +58,40 @@ def full_surroundings(ind_x, ind_y, size, ind_correction):
     return cells
 
 
-def opt_tick(mini_grid, grid, no, ind_correction, size):
-    to_check = set()
+# def opt_tick(mini_grid, grid, no, ind_correction, size):
+#     to_check = set()
 
-    future_grid = np.copy(mini_grid)
+#     future_grid = np.copy(mini_grid)
 
-    if ind_correction > 0:
-        if ind_correction+len(future_grid) < len(grid):
-            check = np.row_stack(
-                (grid[ind_correction-1], future_grid, grid[ind_correction+len(future_grid)]))
-        else:
-            check = np.row_stack((grid[ind_correction-1], future_grid))
-    elif ind_correction+len(future_grid) < len(grid):
-        check = np.row_stack((future_grid, grid[len(future_grid)]))
-    else:
-        check = future_grid
+#     if ind_correction > 0:
+#         if ind_correction+len(future_grid) < len(grid):
+#             check = np.row_stack(
+#                 (grid[ind_correction-1], future_grid, grid[ind_correction+len(future_grid)]))
+#         else:
+#             check = np.row_stack((grid[ind_correction-1], future_grid))
+#     elif ind_correction+len(future_grid) < len(grid):
+#         check = np.row_stack((future_grid, grid[len(future_grid)]))
+#     else:
+#         check = future_grid
 
-    # Selecting cells to check
-    for ind_y, row in enumerate(check):
-        if 255 in row:
-            for ind_x, cell in enumerate(row):
-                if cell == 255:
-                    full = full_surroundings(ind_x, ind_y, size)
-                    for xi, yi in full:
-                        if yi < len(future_grid):
-                            to_check.add((xi, yi))
+#     # Selecting cells to check
+#     for ind_y, row in enumerate(check):
+#         if 255 in row:
+#             for ind_x, cell in enumerate(row):
+#                 if cell == 255:
+#                     full = full_surroundings(ind_x, ind_y, size)
+#                     for xi, yi in full:
+#                         if yi < len(future_grid):
+#                             to_check.add((xi, yi))
 
-    # Generating future generation
-    for ind_x, ind_y in to_check:
-        cell = grid[ind_y+ind_correction][ind_x]
-        neighborhood = surroundings(ind_x, ind_y+ind_correction, size, grid)
+#     # Generating future generation
+#     for ind_x, ind_y in to_check:
+#         cell = grid[ind_y+ind_correction][ind_x]
+#         neighborhood = surroundings(ind_x, ind_y+ind_correction, size, grid)
 
-        future_grid[ind_y][ind_x] = future(cell, neighborhood)
+#         future_grid[ind_y][ind_x] = future(cell, neighborhood)
 
-    return future_grid, no
+#     return future_grid, no
 
 
 def cells_to_detect(mini_grid, size, ind_correction):
@@ -192,7 +192,7 @@ if __name__ == '__main__':
 
     # First Frame
     if not resume == 'y':
-        first_frame = cv.imread('start_.png')
+        first_frame = cv.imread('start.png')
         *size, _ = first_frame.shape
         grid = np.array([[cell[0] for cell in row] for row in first_frame])
         n, start_num = 0, 0
@@ -201,18 +201,6 @@ if __name__ == '__main__':
         *size, _ = first_frame.shape
         grid = np.array([[cell[0] for cell in row] for row in first_frame])
         n, start_num = len(frames), len(frames)
-
-    if False:
-        start = time()
-        for _ in range(2):
-            cv.imwrite('frames/good_frame.png',
-                       opt_tick(grid, grid, 0, 0, size)[0])
-        print(f'{time()-start:4f}s')
-
-        start = time()
-        for _ in range(2):
-            cv.imwrite('frames/good_frame.png', better_tick(24, grid, size))
-        print(f'{time()-start:4f}s')
 
     # Creating frames
     Thread(target=interupt).start()
